@@ -5,29 +5,27 @@ const path = require("path");
 const TOKEN = process.env.BOT_TOKEN;
 
 if (!TOKEN) {
-console.error("❌ BOT_TOKEN not found");
-process.exit(1);
+    console.error("❌ BOT_TOKEN not found");
+    process.exit(1);
 }
 
 const bot = new TelegramBot(TOKEN, {
-polling: true
+    polling: true
 });
 
 // =========================
 // START COMMAND
 // =========================
 
-bot.onText(/^/start$/, async (msg) => {
+bot.onText(/^\/start$/, async (msg) => {
 
-try {
+    try {
 
-    await bot.sendPhoto(
-        msg.chat.id,
-        "https://files.catbox.moe/13nyhx.jpg",
-        {
-            caption:
-
-`🤖 TEDDY-XMD DOWNLOADER BOT
+        await bot.sendPhoto(
+            msg.chat.id,
+            "https://files.catbox.moe/13nyhx.jpg",
+            {
+                caption: `🤖 TEDDY-XMD DOWNLOADER BOT
 
 Welcome to the ultimate Downloader & API Testing Bot.
 
@@ -40,51 +38,48 @@ Welcome to the ultimate Downloader & API Testing Bot.
 
 Choose an option below:`,
 
-            parse_mode: "Markdown",
-
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "📥 Downloaders",
-                            callback_data: "downloaders"
-                        },
-                        {
-                            text: "🤖 AI",
-                            callback_data: "ai"
-                        }
-                    ],
-                    [
-                        {
-                            text: "🧪 API Tester",
-                            callback_data: "apitester"
-                        },
-                        {
-                            text: "🖥 System",
-                            callback_data: "system"
-                        }
-                    ],
-                    [
-                        {
-                            text: "📚 Help",
-                            callback_data: "help"
-                        }
-                    ],
-                    [
-                        {
-                            text: "🌐 Channel",
-                            url: "https://whatsapp.com/channel/0029Vb6NveDBPzjPa4vIRt3n"
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "📥 Downloaders",
+                                callback_data: "downloaders"
+                            },
+                            {
+                                text: "🤖 AI",
+                                callback_data: "ai"
+                            }
+                        ],
+                        [
+                            {
+                                text: "🧪 API Tester",
+                                callback_data: "apitester"
+                            },
+                            {
+                                text: "🖥 System",
+                                callback_data: "system"
+                            }
+                        ],
+                        [
+                            {
+                                text: "📚 Help",
+                                callback_data: "help"
+                            }
+                        ],
+                        [
+                            {
+                                text: "🌐 Channel",
+                                url: "https://whatsapp.com/channel/0029Vb6NveDBPzjPa4vIRt3n"
+                            }
+                        ]
                     ]
-                ]
+                }
             }
-        }
-    );
+        );
 
-} catch (err) {
-    console.error(err);
-}
-
+    } catch (err) {
+        console.error("START ERROR:", err);
+    }
 });
 
 // =========================
@@ -93,106 +88,90 @@ Choose an option below:`,
 
 bot.on("callback_query", async (query) => {
 
-const chatId = query.message.chat.id;
-const data = query.data;
+    const chatId = query.message.chat.id;
+    const data = query.data;
 
-try {
+    try {
 
-    switch (data) {
+        switch (data) {
 
-        case "downloaders":
+            case "downloaders":
 
-            await bot.sendMessage(
-                chatId,
-
-`📥 DOWNLOADERS
+                await bot.sendMessage(
+                    chatId,
+                    `📥 DOWNLOADERS
 
 /tiktok <url>
 /instagram <url>
 /facebook <url>
 /youtube <url>
-/play <song>`,
-{ parse_mode: "Markdown" }
-);
+/play <song>`
+                );
+                break;
 
-            break;
+            case "ai":
 
-        case "ai":
-
-            await bot.sendMessage(
-                chatId,
-
-`🤖 AI COMMANDS
+                await bot.sendMessage(
+                    chatId,
+                    `🤖 AI COMMANDS
 
 /ai hello
 /gpt tell me a joke
-/code create express server`,
-{ parse_mode: "Markdown" }
-);
+/code create express server`
+                );
+                break;
 
-            break;
+            case "apitester":
 
-        case "apitester":
-
-            await bot.sendMessage(
-                chatId,
-
-`🧪 API TESTER
+                await bot.sendMessage(
+                    chatId,
+                    `🧪 API TESTER
 
 /api <url>
 
-/endpoints`,
-{ parse_mode: "Markdown" }
-);
+/endpoints`
+                );
+                break;
 
-            break;
+            case "system":
 
-        case "system":
-
-            await bot.sendMessage(
-                chatId,
-
-`🖥 SYSTEM COMMANDS
+                await bot.sendMessage(
+                    chatId,
+                    `🖥 SYSTEM COMMANDS
 
 /ping
 /runtime
 /server
-/logs`,
-{ parse_mode: "Markdown" }
-);
+/logs`
+                );
+                break;
 
-            break;
+            case "help":
 
-        case "help":
+                await bot.sendMessage(
+                    chatId,
+                    `📚 HELP
 
-            await bot.sendMessage(
-                chatId,
-
-`📚 HELP
-
-Example:
+Examples:
 
 /play Not Like Us
-/tiktok <url>
-/instagram <url>`,
-{ parse_mode: "Markdown" }
-);
+/tiktok https://vm.tiktok.com/...
+/instagram https://instagram.com/...
+/facebook https://facebook.com/...`
+                );
+                break;
+        }
 
-            break;
+        await bot.answerCallbackQuery(query.id);
+
+    } catch (err) {
+
+        console.error(err);
+
+        await bot.answerCallbackQuery(query.id, {
+            text: "Error occurred"
+        });
     }
-
-    await bot.answerCallbackQuery(query.id);
-
-} catch (err) {
-
-    console.error(err);
-
-    await bot.answerCallbackQuery(query.id, {
-        text: "Error"
-    });
-
-}
-
 });
 
 // =========================
@@ -203,25 +182,24 @@ const pluginsDir = path.join(__dirname, "plugins");
 
 if (fs.existsSync(pluginsDir)) {
 
-fs.readdirSync(pluginsDir)
-    .filter(file => file.endsWith(".js"))
-    .forEach(file => {
+    fs.readdirSync(pluginsDir)
+        .filter(file => file.endsWith(".js"))
+        .forEach(file => {
 
-        try {
+            try {
 
-            require(path.join(pluginsDir, file))(bot);
+                require(path.join(pluginsDir, file))(bot);
 
-            console.log(`✅ Loaded: ${file}`);
+                console.log(`✅ Loaded: ${file}`);
 
-        } catch (err) {
+            } catch (err) {
 
-            console.error(`❌ Failed: ${file}`);
-            console.error(err);
+                console.error(`❌ Failed: ${file}`);
+                console.error(err);
 
-        }
+            }
 
-    });
-
+        });
 }
 
 // =========================
